@@ -17,7 +17,7 @@ WildRydes.map = WildRydes.map || {};
         window.location.href = '/signin.html';
     });
 
-    function requestJetpack(pickupLocation) {
+    function requestUnicorn(pickupLocation) {
         $.ajax({
             method: 'POST',
             url: _config.api.invokeUrl + '/ride',
@@ -35,24 +35,20 @@ WildRydes.map = WildRydes.map || {};
             error: function ajaxError(jqXHR, textStatus, errorThrown) {
                 console.error('Error requesting ride: ', textStatus, ', Details: ', errorThrown);
                 console.error('Response: ', jqXHR.responseText);
-                alert('An error occurred when requesting your jetpack:\n' + jqXHR.responseText);
+                alert('An error occured when requesting your unicorn:\n' + jqXHR.responseText);
             }
         });
     }
 
     function completeRequest(result) {
-        // Backward compatibility: accept either { Jetpack: {...} } or { Unicorn: {...} }
-        var jetpack = result.Jetpack || result.Unicorn;
+        var unicorn;
+        var pronoun;
         console.log('Response received from API: ', result);
-
-        if (!jetpack) {
-            displayUpdate('We could not allocate a jetpack right now. Please try again.');
-            return;
-        }
-
-        displayUpdate(jetpack.Name + ', your ' + jetpack.Color + ' jetpack, is on the way.');
+        unicorn = result.Unicorn;
+        pronoun = unicorn.Gender === 'Male' ? 'his' : 'her';
+        displayUpdate(unicorn.Name + ', your ' + unicorn.Color + ' unicorn, is on ' + pronoun + ' way.');
         animateArrival(function animateCallback() {
-            displayUpdate(jetpack.Name + ' has arrived. Strap in!');
+            displayUpdate(unicorn.Name + ' has arrived. Giddy up!');
             WildRydes.map.unsetLocation();
             $('#request').prop('disabled', 'disabled');
             $('#request').text('Set Pickup');
@@ -78,14 +74,14 @@ WildRydes.map = WildRydes.map || {};
 
     function handlePickupChanged() {
         var requestButton = $('#request');
-        requestButton.text('Request Jetpack');
+        requestButton.text('Request Unicorn');
         requestButton.prop('disabled', false);
     }
 
     function handleRequestClick(event) {
         var pickupLocation = WildRydes.map.selectedPoint;
         event.preventDefault();
-        requestJetpack(pickupLocation);
+        requestUnicorn(pickupLocation);
     }
 
     function animateArrival(callback) {
